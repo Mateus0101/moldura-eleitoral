@@ -1,5 +1,6 @@
 import { ALTURA, LARGURA, RODAPE, ROTULO_CARGO, TEMA } from './config.ts'
 import { AJUSTE_INICIAL, enquadrar } from './enquadramento.ts'
+import { estiloMoldura, type EstiloMoldura } from './esquemas.ts'
 import { dimensoes } from './imagens.ts'
 import { ajustarTexto, type OpcoesTexto } from './texto.ts'
 import type { Ajuste, CandidatoMoldura, EntradaMoldura, FonteImagem, Retangulo } from './tipos.ts'
@@ -31,10 +32,12 @@ const ALTURA_CHIP = 96
 
 const estilo = (peso: number) => (px: number) => `${peso} ${px}px ${TEMA.familia}`
 
+const ESTILO_PADRAO = estiloMoldura('partido') // partido sem cores cadastradas: azul-noite neutro
+
 // --- Desenho -----------------------------------------------------------------
 
 export function desenharMoldura(canvas: HTMLCanvasElement, entrada: EntradaMoldura): void {
-  const { candidato, nomeEleitor, fotoCandidato, fotoEleitor, ajuste = AJUSTE_INICIAL } = entrada
+  const { candidato, nomeEleitor, fotoCandidato, fotoEleitor, ajuste = AJUSTE_INICIAL, cores = ESTILO_PADRAO } = entrada
   if (canvas.width !== LARGURA) canvas.width = LARGURA
   if (canvas.height !== ALTURA) canvas.height = ALTURA
   const ctx = canvas.getContext('2d')!
@@ -44,15 +47,20 @@ export function desenharMoldura(canvas: HTMLCanvasElement, entrada: EntradaMoldu
   ctx.fillStyle = TEMA.fundo
   ctx.fillRect(0, 0, LARGURA, ALTURA)
 
-  desenharQuadro(ctx, fotoEleitor, ajuste)
-  desenharTextos(ctx, candidato, nomeEleitor)
+  desenharQuadro(ctx, fotoEleitor, ajuste, cores)
+  desenharTextos(ctx, candidato, nomeEleitor, cores)
   desenharSelo(ctx, fotoCandidato)
   desenharRodape(ctx)
 
   ctx.restore()
 }
 
-function desenharQuadro(ctx: CanvasRenderingContext2D, foto: FonteImagem | null | undefined, ajuste: Ajuste) {
+function desenharQuadro(
+  ctx: CanvasRenderingContext2D,
+  foto: FonteImagem | null | undefined,
+  ajuste: Ajuste,
+  cores: EstiloMoldura,
+) {
   ctx.save()
   caminhoArredondado(ctx, AREA_FOTO, RAIO_QUADRO)
   ctx.clip()
@@ -60,19 +68,48 @@ function desenharQuadro(ctx: CanvasRenderingContext2D, foto: FonteImagem | null 
   if (foto) desenharCobrindo(ctx, foto, AREA_FOTO, ajuste)
   else desenharAvatar(ctx, AREA_FOTO)
 
-  const topo = AREA_FOTO.y + AREA_FOTO.h * 0.45
-  const base = AREA_FOTO.y + AREA_FOTO.h * 0.8
-  const degrade = ctx.createLinearGradient(0, topo, 0, base)
-  degrade.addColorStop(0, `rgba(${TEMA.escurecer}, 0)`)
-  degrade.addColorStop(1, `rgba(${TEMA.escurecer}, 0.9)`)
-  ctx.fillStyle = degrade
-  ctx.fillRect(AREA_FOTO.x, AREA_FOTO.y, AREA_FOTO.w, AREA_FOTO.h)
+  ctx.drawImage(camadaDegrade(cores), AREA_FOTO.x, AREA_FOTO.y)
   ctx.restore()
+}
+
+let camada: { chave: string; canvas: HTMLCanvasElement } | undefined
+
+// As cores do esquema em degradê horizontal, com a transparência subindo de baixo para cima:
+// a foto aparece por cima e a cor toma conta da parte de baixo, onde fica o texto. Fica guardada
+// porque arrastar a foto redesenha a moldura o tempo todo e a camada só muda com o esquema.
+function camadaDegrade(cores: EstiloMoldura): HTMLCanvasElement {
+  const chave = JSON.stringify(cores.paradas)
+  if (camada?.chave === chave) return camada.canvas
+
+  const canvas = camada?.canvas ?? document.createElement('canvas')
+  canvas.width = AREA_FOTO.w
+  canvas.height = AREA_FOTO.h
+  const ctx = canvas.getContext('2d')!
+
+  const horizontal = ctx.createLinearGradient(0, 0, AREA_FOTO.w, 0)
+  for (const { posicao, cor } of cores.paradas) horizontal.addColorStop(posicao, cor)
+  ctx.fillStyle = horizontal
+  ctx.fillRect(0, 0, AREA_FOTO.w, AREA_FOTO.h)
+
+  const vertical = ctx.createLinearGradient(0, AREA_FOTO.h * 0.45, 0, AREA_FOTO.h * 0.8)
+  vertical.addColorStop(0, 'rgba(0, 0, 0, 0)')
+  vertical.addColorStop(1, 'rgba(0, 0, 0, 0.9)')
+  ctx.globalCompositeOperation = 'destination-in' // mantém a cor só onde a máscara é opaca
+  ctx.fillStyle = vertical
+  ctx.fillRect(0, 0, AREA_FOTO.w, AREA_FOTO.h)
+
+  camada = { chave, canvas }
+  return canvas
 }
 
 // Os blocos de texto são empilhados de baixo para cima: o partido fica fixo junto à borda e
 // o resto sobe conforme o nome ocupa uma ou duas linhas.
-function desenharTextos(ctx: CanvasRenderingContext2D, c: CandidatoMoldura, nomeEleitor?: string) {
+function desenharTextos(
+  ctx: CanvasRenderingContext2D,
+  c: CandidatoMoldura,
+  nomeEleitor: string | undefined,
+  cores: EstiloMoldura,
+) {
   ctx.textAlign = 'left'
   ctx.textBaseline = 'top'
 
@@ -81,7 +118,7 @@ function desenharTextos(ctx: CanvasRenderingContext2D, c: CandidatoMoldura, nome
 
   let y = LIMITE_INFERIOR
   if (detalhe) {
-    y = blocoAcima(ctx, detalhe, y, TEMA.textoSuave, 1.2, {
+    y = blocoAcima(ctx, detalhe, y, cores.textoSuave, 1.2, {
       fonteMax: 36,
       fonteMin: 24,
       maxLinhas: 1,
@@ -89,21 +126,21 @@ function desenharTextos(ctx: CanvasRenderingContext2D, c: CandidatoMoldura, nome
     })
   }
   if (cargo) {
-    y = blocoAcima(ctx, cargo, y - 6, TEMA.texto, 1.2, {
+    y = blocoAcima(ctx, cargo, y - 6, cores.texto, 1.2, {
       fonteMax: 44,
       fonteMin: 28,
       maxLinhas: 1,
       estilo: estilo(600),
     })
   }
-  y = blocoAcima(ctx, c.nome, y - 12, TEMA.texto, 1.05, {
+  y = blocoAcima(ctx, c.nome, y - 12, cores.texto, 1.05, {
     fonteMax: 80,
     fonteMin: 40,
     maxLinhas: 2,
     estilo: estilo(800),
   })
 
-  desenharLinhaDoNumero(ctx, String(c.numero), y - 20 - ALTURA_CHIP, nomeEleitor)
+  desenharLinhaDoNumero(ctx, String(c.numero), y - 20 - ALTURA_CHIP, nomeEleitor, cores)
 }
 
 function blocoAcima(
@@ -125,7 +162,13 @@ function blocoAcima(
 
 // O número da urna num chip claro à direita e, à esquerda, "EU APOIO" ou "<NOME> APOIA".
 // O nome do eleitor pode ser longo: o rótulo ocupa o que sobra ao lado do chip, em até 2 linhas.
-function desenharLinhaDoNumero(ctx: CanvasRenderingContext2D, numero: string, topo: number, nomeEleitor?: string) {
+function desenharLinhaDoNumero(
+  ctx: CanvasRenderingContext2D,
+  numero: string,
+  topo: number,
+  nomeEleitor: string | undefined,
+  cores: EstiloMoldura,
+) {
   const centro = topo + ALTURA_CHIP / 2
   ctx.textBaseline = 'middle'
 
@@ -133,10 +176,10 @@ function desenharLinhaDoNumero(ctx: CanvasRenderingContext2D, numero: string, to
   const largura = Math.max(150, ctx.measureText(numero).width + 72)
   const direita = COLUNA_X + COLUNA_L
   caminhoArredondado(ctx, { x: direita - largura, y: topo, w: largura, h: ALTURA_CHIP }, ALTURA_CHIP / 2)
-  ctx.fillStyle = TEMA.chip
+  ctx.fillStyle = cores.chip
   ctx.fill()
 
-  ctx.fillStyle = TEMA.chipTexto
+  ctx.fillStyle = cores.chipTexto
   ctx.textAlign = 'center'
   ctx.fillText(numero, direita - largura / 2, centro + 3)
   ctx.textAlign = 'left'
@@ -147,7 +190,7 @@ function desenharLinhaDoNumero(ctx: CanvasRenderingContext2D, numero: string, to
   const { linhas, fonte } = ajustarTexto(ctx, rotulo, COLUNA_L - largura - 24, opcoes)
   const passo = fonte * 1.15
   ctx.font = opcoes.estilo(fonte)
-  ctx.fillStyle = TEMA.textoSuave
+  ctx.fillStyle = cores.textoSuave
   linhas.forEach((linha, i) => ctx.fillText(linha, COLUNA_X, centro + (i - (linhas.length - 1) / 2) * passo))
   ctx.textBaseline = 'top'
 }

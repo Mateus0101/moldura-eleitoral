@@ -1,3 +1,5 @@
+import type { EstiloMoldura } from './esquemas.ts'
+
 // Imagens que o canvas sabe desenhar. A foto do eleitor vira canvas (já reduzida e com a
 // orientação do EXIF aplicada); a do candidato é um <img> carregado do mesmo domínio.
 export type FonteImagem = HTMLImageElement | HTMLCanvasElement
@@ -19,6 +21,7 @@ export type CandidatoMoldura = {
 
 export type EntradaMoldura = {
   candidato: CandidatoMoldura
+  cores?: EstiloMoldura // sem isso, azul-noite neutro
   nomeEleitor?: string // opcional: o rótulo vira "<NOME> APOIA" em vez de "EU APOIO"
   fotoCandidato?: FonteImagem | null // sem foto: avatar genérico
   fotoEleitor?: FonteImagem | null // sem foto: área em branco com avatar

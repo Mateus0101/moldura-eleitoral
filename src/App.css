@@ -208,14 +208,18 @@ main {
   color: var(--suave);
 }
 
-/* Quebra em linhas em vez de rolar de lado: todos os cargos ficam à vista, sem opção escondida. */
-.cargos {
+/* Quebra em linhas em vez de rolar de lado: todas as opções ficam à vista, sem nada escondido. */
+.cargos,
+.opcoes {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
 .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   flex: none;
   min-height: 2.5rem;
   padding: 0 0.75rem;
@@ -235,6 +239,19 @@ main {
   border-color: var(--tinta);
   background: var(--tinta);
   color: var(--sobre-tinta);
+}
+
+/* Amostra da cor no botão: o contorno mantém visível o branco sobre fundo claro. */
+.amostra {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1.5px solid var(--linha);
+  border-radius: 50%;
+}
+
+.chip[aria-pressed='true'] .amostra {
+  border-color: var(--sobre-tinta);
 }
 
 .refino {

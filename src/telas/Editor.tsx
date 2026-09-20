@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type PointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type PointerEvent } from 'react'
 import { SetaEsquerda } from '../componentes/icones.tsx'
+import { CORES_PARTIDO } from '../dados/cores-partidos.ts'
 import type { Candidato } from '../dados/tipos.ts'
 import {
   AJUSTE_INICIAL,
@@ -10,12 +11,22 @@ import {
   carregarFotoEleitor,
   desenharMoldura,
   dimensoes,
+  estiloMoldura,
   exportarImagem,
+  gradienteCss,
   type Ajuste,
+  type Esquema,
   type FonteImagem,
 } from '../moldura/index.ts'
 
 const PASSO_TECLADO = 40 // px do canvas por toque numa seta
+
+const ROTULO_ESQUEMA: Record<Esquema, string> = {
+  partido: 'Cores do partido',
+  branco: 'Branco',
+  preto: 'Preto',
+  bandeira: 'Bandeira do Brasil',
+}
 
 type Props = { candidato: Candidato; onTrocar: () => void }
 
@@ -28,6 +39,14 @@ export function Editor({ candidato, onTrocar }: Props) {
   const [ajuste, setAjuste] = useState<Ajuste>(AJUSTE_INICIAL)
   const [nomeEleitor, setNomeEleitor] = useState('')
   const [erro, setErro] = useState('')
+
+  // "Cores do partido" só aparece para partido com cores já cadastradas; sem elas, o padrão é preto.
+  const coresPartido = CORES_PARTIDO[candidato.partido]
+  const esquemas: Esquema[] = coresPartido
+    ? ['partido', 'branco', 'preto', 'bandeira']
+    : ['branco', 'preto', 'bandeira']
+  const [esquema, setEsquema] = useState<Esquema>(coresPartido ? 'partido' : 'preto')
+  const cores = useMemo(() => estiloMoldura(esquema, coresPartido), [esquema, coresPartido])
 
   useEffect(() => {
     titulo.current?.focus({ preventScroll: true })
@@ -54,11 +73,12 @@ export function Editor({ candidato, onTrocar }: Props) {
         vice: candidato.vice?.nome,
       },
       nomeEleitor,
+      cores,
       fotoCandidato,
       fotoEleitor,
       ajuste,
     })
-  }, [candidato, nomeEleitor, fotoCandidato, fotoEleitor, ajuste])
+  }, [candidato, nomeEleitor, cores, fotoCandidato, fotoEleitor, ajuste])
 
   async function escolherFoto(e: ChangeEvent<HTMLInputElement>) {
     const arquivo = e.target.files?.[0]
@@ -162,6 +182,24 @@ export function Editor({ candidato, onTrocar }: Props) {
           />
         </label>
 
+        <div className="campo" role="group" aria-labelledby="titulo-cores">
+          <span id="titulo-cores">Cores da moldura</span>
+          <div className="opcoes">
+            {esquemas.map((e) => (
+              <button
+                key={e}
+                type="button"
+                className="chip"
+                aria-pressed={esquema === e}
+                onClick={() => setEsquema(e)}
+              >
+                <span className="amostra" style={{ background: gradienteCss(estiloMoldura(e, coresPartido)) }} />
+                {ROTULO_ESQUEMA[e]}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="campo">
           <label htmlFor="nome-eleitor">Seu nome (opcional)</label>
           <input
@@ -170,7 +208,7 @@ export function Editor({ candidato, onTrocar }: Props) {
             className="texto"
             autoComplete="name"
             maxLength={40}
-            placeholder="Ex.: Mateus Menezes"
+            placeholder="Ex.: Seu nome ou apelido"
             aria-describedby="dica-nome"
             value={nomeEleitor}
             onChange={(e) => setNomeEleitor(e.target.value)}

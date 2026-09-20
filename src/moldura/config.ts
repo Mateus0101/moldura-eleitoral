@@ -7,14 +7,10 @@ export const ALTURA = 1080
 // redesenhar isso a cada movimento do zoom trava aparelho simples.
 export const LADO_MAX_FOTO = 2048
 
+// As cores do degradê, do texto e do chip do número vêm do esquema (esquemas.ts).
 export const TEMA = {
   fundo: '#f4f1ea',
-  texto: '#f8fafc',
-  textoSuave: 'rgba(248, 250, 252, 0.85)',
   rodape: '#4b5563',
-  escurecer: '11, 18, 32', // RGB do degradê que garante leitura do texto sobre qualquer foto
-  chip: '#ffffff',
-  chipTexto: '#111827',
   anel: '#ffffff',
   avatarFundo: '#d5d9df',
   avatarFigura: '#8a93a1',
