@@ -31,7 +31,7 @@ Vite + React + TypeScript + PWA (`vite-plugin-pwa`). A composição da imagem ro
 
 ## Em aberto
 
-- **Cobrança simbólica pelo download da imagem**: possibilidade anotada, ainda sem decisão. Antes de decidir, validar com advogado eleitoral e checar direito de imagem dos candidatos, já que cobrar torna o uso comercial.
+- **Sem cobrança**: o app é gratuito (cobrar pelo download fere normas do TSE) e não guarda dados dos eleitores. A única métrica prevista é a contagem de imagens geradas, sem identificar ninguém. Falta validar com advogado eleitoral o uso da imagem dos candidatos.
 - Nome definitivo do projeto.
 - Licença (por ora, todos os direitos reservados).
 - Identidade visual da moldura.

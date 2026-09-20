@@ -12,6 +12,7 @@ Web app (PWA) neutro e independente: o eleitor escolhe cargo e candidato, insere
 - Repositório remoto privado: `git@github.com:Mateus0101/moldura-eleitoral.git` (`origin`, já configurado e com acesso SSH ok). Ainda sem commit e sem push.
 - `imagens/` e `dados/` estão no `.gitignore` (só o `.gitkeep` entra). Reavaliar depois, por causa do tamanho.
 - Licença: por ora, todos os direitos reservados (sem arquivo `LICENSE` ainda).
+- Sem cobrança, decidido pelo usuário em 20/09/2026: cobrar pelo download fere normas do TSE. O app é gratuito, sem marca d'água (bloquear print não é possível na web de qualquer forma) e não guarda dado de eleitor; foto e nome ficam no aparelho. A única métrica prevista é a contagem de imagens geradas (ver Pendências).
 
 ## Dados e fotos (analisados em 20/09/2026)
 
@@ -60,7 +61,7 @@ Web app (PWA) neutro e independente: o eleitor escolhe cargo e candidato, insere
 - Decidir se cria o `LICENSE`.
 - Commits locais feitos em `main` em 20/09/2026. Push só quando o usuário pedir.
 - Identidade visual da moldura e do app, a alinhar com o usuário (hoje tudo é provisório).
-- Cobrança simbólica pelo download: apenas anotada como possibilidade. Validar com advogado eleitoral e checar direito de imagem antes de decidir. Bloquear print de tela não é possível na web (só app nativo faz isso), então, se cobrar, o caminho é marca d'água na prévia.
+- Métrica mínima (ainda não implementada): só a contagem de imagens geradas, sem identificar ninguém. Opções: GoatCounter (grátis para uso não comercial, sem cookies) ou um Cloudflare Worker + D1 próprio. Ao implementar, trocar o texto "nada é enviado" do editor por algo fiel ("sua foto e seu nome nunca saem do aparelho; só contamos quantas imagens foram geradas") e pôr um aviso curto de privacidade.
 
 ## Contexto de prazo
 
