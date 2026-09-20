@@ -3,6 +3,7 @@ import './App.css'
 import { SetaBaixo } from './componentes/icones.tsx'
 import { carregarCandidatos, carregarDataDosDados } from './dados/carregar.ts'
 import type { Candidato } from './dados/tipos.ts'
+import { contadorAtivo } from './metricas.ts'
 import { UFS } from './dados/ufs.ts'
 import { Busca } from './telas/Busca.tsx'
 import { EscolherUf } from './telas/EscolherUf.tsx'
@@ -157,6 +158,7 @@ function App() {
         <p>
           Aplicativo independente, sem vínculo com o TSE, candidatos, partidos ou campanhas.
           {dataDados && ` Dados do TSE gerados em ${dataDados}.`}
+          {contadorAtivo && ' Só contamos quantas imagens são geradas, sem saber quem as gerou.'}
         </p>
       </footer>
     </div>

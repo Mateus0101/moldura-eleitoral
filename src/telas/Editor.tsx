@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEv
 import { SetaEsquerda } from '../componentes/icones.tsx'
 import { CORES_PARTIDO } from '../dados/cores-partidos.ts'
 import type { Candidato } from '../dados/tipos.ts'
+import { contarImagemGerada } from '../metricas.ts'
 import {
   AJUSTE_INICIAL,
   AREA_FOTO,
@@ -20,6 +21,20 @@ import {
 } from '../moldura/index.ts'
 
 const PASSO_TECLADO = 40 // px do canvas por toque numa seta
+const ESPERA_DO_ARQUIVO = 350 // ms parado até gerar o JPEG que o "Compartilhar" vai enviar
+
+// Compartilhar arquivo (a imagem) pelo menu do sistema: WhatsApp, Instagram, Telegram... Está no
+// celular e em parte dos computadores; onde não existe, o app só oferece baixar.
+function suportaCompartilharArquivo(): boolean {
+  try {
+    return (
+      typeof navigator.canShare === 'function' &&
+      navigator.canShare({ files: [new File([''], 'moldura.jpg', { type: 'image/jpeg' })] })
+    )
+  } catch {
+    return false
+  }
+}
 
 const ROTULO_ESQUEMA: Record<Esquema, string> = {
   partido: 'Cores do partido',
@@ -39,6 +54,10 @@ export function Editor({ candidato, onTrocar }: Props) {
   const [ajuste, setAjuste] = useState<Ajuste>(AJUSTE_INICIAL)
   const [nomeEleitor, setNomeEleitor] = useState('')
   const [erro, setErro] = useState('')
+  const [podeCompartilhar] = useState(suportaCompartilharArquivo)
+  // O JPEG fica pronto antes do clique: o navegador só deixa abrir o menu de compartilhar dentro do
+  // gesto do toque, e gerar a imagem na hora (é assíncrono) faria o iPhone recusar.
+  const [arquivo, setArquivo] = useState<File | null>(null)
 
   // "Cores do partido" só aparece para partido com cores já cadastradas; sem elas, o padrão é preto.
   const coresPartido = CORES_PARTIDO[candidato.partido]
@@ -78,6 +97,26 @@ export function Editor({ candidato, onTrocar }: Props) {
       fotoEleitor,
       ajuste,
     })
+  }, [candidato, nomeEleitor, cores, fotoCandidato, fotoEleitor, ajuste])
+
+  // Gera o arquivo quando a moldura para de mudar. Ao mudar de novo, o anterior deixa de valer na hora.
+  useEffect(() => {
+    if (!fotoEleitor || !canvas.current) return
+    const tela = canvas.current
+    let vale = true
+    const espera = setTimeout(async () => {
+      try {
+        const blob = await exportarImagem(tela)
+        if (vale) setArquivo(new File([blob], `moldura-${candidato.numero}.jpg`, { type: blob.type }))
+      } catch {
+        // sem arquivo pronto, "Compartilhar" fica desativado e "Baixar" gera na hora
+      }
+    }, ESPERA_DO_ARQUIVO)
+    return () => {
+      vale = false
+      clearTimeout(espera)
+      setArquivo(null)
+    }
   }, [candidato, nomeEleitor, cores, fotoCandidato, fotoEleitor, ajuste])
 
   async function escolherFoto(e: ChangeEvent<HTMLInputElement>) {
@@ -121,15 +160,29 @@ export function Editor({ candidato, onTrocar }: Props) {
   async function baixar() {
     if (!canvas.current) return
     try {
-      const blob = await exportarImagem(canvas.current)
+      const blob = arquivo ?? (await exportarImagem(canvas.current))
       const link = document.createElement('a')
       link.href = URL.createObjectURL(blob)
       link.download = `moldura-${candidato.numero}.jpg`
       link.click()
       setTimeout(() => URL.revokeObjectURL(link.href), 1000)
       setErro('')
+      contarImagemGerada('baixada')
     } catch {
       setErro('Não foi possível gerar a imagem. Tente de novo.')
+    }
+  }
+
+  async function compartilhar() {
+    if (!arquivo) return
+    try {
+      await navigator.share({ files: [arquivo] })
+      setErro('')
+      contarImagemGerada('compartilhada')
+    } catch (e) {
+      // Fechar o menu sem escolher nada não é erro.
+      if (e instanceof DOMException && e.name === 'AbortError') return
+      setErro('Não foi possível abrir o compartilhamento. Baixe a imagem e envie pelo app que preferir.')
     }
   }
 
@@ -165,7 +218,7 @@ export function Editor({ candidato, onTrocar }: Props) {
           <p className="nota">
             {fotoEleitor
               ? 'Arraste a foto para enquadrar.'
-              : 'Escolha uma foto sua. Ela e seu nome ficam só neste aparelho: nada é enviado.'}
+              : 'Escolha uma foto sua. Ela e o seu nome nunca saem do aparelho.'}
           </p>
         </div>
 
@@ -224,9 +277,20 @@ export function Editor({ candidato, onTrocar }: Props) {
           </p>
         )}
 
-        <button type="button" className="botao botao-principal" disabled={!fotoEleitor} onClick={baixar}>
-          Baixar imagem
-        </button>
+        {podeCompartilhar ? (
+          <>
+            <button type="button" className="botao botao-principal" disabled={!arquivo} onClick={compartilhar}>
+              Compartilhar
+            </button>
+            <button type="button" className="botao" disabled={!fotoEleitor} onClick={baixar}>
+              Baixar imagem
+            </button>
+          </>
+        ) : (
+          <button type="button" className="botao botao-principal" disabled={!fotoEleitor} onClick={baixar}>
+            Baixar imagem
+          </button>
+        )}
       </div>
     </section>
   )
