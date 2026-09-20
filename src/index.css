@@ -1,0 +1,88 @@
+/* Tokens e base. A paleta vem da urna eletrônica: visor cinza-esverdeado, tinta escura e
+   o laranja da tecla "corrige" só para o foco. Nada que lembre partido ou campanha. */
+
+:root {
+  color-scheme: light dark;
+
+  --tela: #e3e8e1;
+  --papel: #f6f7f4;
+  --tinta: #141c17;
+  --sobre-tinta: #f6f7f4;
+  --suave: #56635b;
+  --linha: #c3cbc0;
+  --tecla: #d3dad0;
+  --foco: #c9611a;
+  --erro: #a3261f;
+
+  --raio: 10px;
+  --fonte: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tela: #0f1512;
+    --papel: #182019;
+    --tinta: #e9efe8;
+    --sobre-tinta: #0f1512;
+    --suave: #9aa89f;
+    --linha: #2f3b32;
+    --tecla: #232e26;
+    --foco: #f08a3c;
+    --erro: #ff9d94;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--tela);
+  color: var(--tinta);
+  font: 1rem/1.5 var(--fonte);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+p,
+ul,
+ol {
+  margin: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.so-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -1,0 +1,449 @@
+/* Layout: uma coluna à esquerda, no máximo 40rem, pensada primeiro para celular.
+   Estrutura vem de linhas finas, não de cartões com sombra. O destaque visual é um só:
+   o número em caixinhas de urna. */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 40rem;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+}
+
+main {
+  display: contents;
+}
+
+.tela {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* --- Topo e passos ------------------------------------------------------- */
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.marca {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.75rem;
+  padding: 0 0.75rem 0 1rem;
+  border: 2px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--papel);
+  font-weight: 800;
+}
+
+.estado:hover {
+  border-color: var(--tinta);
+}
+
+.passos {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: passo;
+}
+
+.passos li {
+  flex: 1;
+  padding-top: 0.375rem;
+  border-top: 4px solid var(--linha);
+  color: var(--suave);
+  font-size: 0.875rem;
+  counter-increment: passo;
+}
+
+.passos li::before {
+  content: counter(passo) '. ';
+}
+
+.passos li[aria-current='step'] {
+  border-top-color: var(--tinta);
+  color: var(--tinta);
+  font-weight: 700;
+}
+
+/* --- Texto --------------------------------------------------------------- */
+
+.titulo {
+  font-size: clamp(1.75rem, 7vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.titulo:focus {
+  outline: none;
+}
+
+.apoio,
+.nota,
+.contagem {
+  color: var(--suave);
+}
+
+.apoio {
+  max-width: 34rem;
+}
+
+.nota {
+  font-size: 0.875rem;
+}
+
+.erro {
+  color: var(--erro);
+  font-weight: 600;
+}
+
+/* --- Botões -------------------------------------------------------------- */
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0 1.25rem;
+  border: 2px solid var(--tinta);
+  border-radius: var(--raio);
+  background: none;
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.botao:hover {
+  background: var(--tecla);
+}
+
+.botao-principal {
+  background: var(--tinta);
+  color: var(--sobre-tinta);
+}
+
+.botao-principal:hover {
+  background: var(--tinta);
+  opacity: 0.9;
+}
+
+.botao:disabled {
+  border-color: var(--linha);
+  background: var(--tecla);
+  color: var(--suave);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* --- Escolha do estado: teclado de siglas -------------------------------- */
+
+.ufs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.tecla {
+  width: 100%;
+  min-height: 3.5rem;
+  border: 2px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--papel);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.tecla:hover {
+  border-color: var(--tinta);
+}
+
+.tecla:active {
+  background: var(--tecla);
+}
+
+/* --- Busca e filtros ----------------------------------------------------- */
+
+.busca {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.busca svg {
+  position: absolute;
+  left: 1rem;
+  color: var(--suave);
+  pointer-events: none;
+}
+
+.busca input {
+  width: 100%;
+  height: 3.5rem;
+  padding: 0 1rem 0 3rem;
+  border: 2px solid var(--tinta);
+  border-radius: var(--raio);
+  background: var(--papel);
+  font-size: 1.125rem;
+}
+
+.busca input::placeholder {
+  color: var(--suave);
+}
+
+/* Quebra em linhas em vez de rolar de lado: todos os cargos ficam à vista, sem opção escondida. */
+.cargos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  flex: none;
+  min-height: 2.5rem;
+  padding: 0 0.75rem;
+  border: 2px solid var(--linha);
+  border-radius: 999px;
+  background: var(--papel);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: var(--tinta);
+}
+
+.chip[aria-pressed='true'] {
+  border-color: var(--tinta);
+  background: var(--tinta);
+  color: var(--sobre-tinta);
+}
+
+.refino {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.partido-filtro {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.partido-filtro select {
+  min-height: 2.75rem;
+  max-width: 11rem;
+  padding: 0 0.75rem;
+  border: 2px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--papel);
+}
+
+/* --- Lista de candidatos ------------------------------------------------- */
+
+.resultados {
+  padding: 0;
+  border-top: 1px solid var(--linha);
+  list-style: none;
+}
+
+.resultados li {
+  border-bottom: 1px solid var(--linha);
+}
+
+.linha {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  grid-template-areas:
+    'foto corpo'
+    'foto numero';
+  gap: 0.25rem 0.875rem;
+  align-items: start;
+  width: 100%;
+  padding: 0.75rem 0.25rem;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+.linha:hover {
+  background: color-mix(in srgb, var(--tecla) 55%, transparent);
+}
+
+.foto {
+  grid-area: foto;
+  width: 3.5rem;
+  height: 4.5rem;
+  border-radius: 8px;
+  background: var(--tecla);
+  object-fit: cover;
+  object-position: top;
+}
+
+.foto-vazia {
+  display: block;
+  overflow: hidden;
+  color: var(--suave);
+}
+
+.corpo {
+  grid-area: corpo;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.nome {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.detalhe {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.625rem;
+  color: var(--suave);
+  font-size: 0.9375rem;
+}
+
+.partido {
+  padding: 0 0.4rem;
+  border: 1.5px solid var(--linha);
+  border-radius: 6px;
+  color: var(--tinta);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.numero {
+  grid-area: numero;
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.digito {
+  display: grid;
+  place-items: center;
+  width: 1.625rem;
+  height: 2.125rem;
+  border: 2px solid var(--tinta);
+  border-radius: 5px;
+  background: var(--papel);
+  font: 800 1.25rem/1 var(--mono);
+}
+
+@media (min-width: 34rem) {
+  .linha {
+    grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+    grid-template-areas: 'foto corpo numero';
+    align-items: center;
+  }
+}
+
+.vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem 0;
+}
+
+/* --- Editor -------------------------------------------------------------- */
+
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.25rem;
+  min-height: 2.75rem;
+  padding: 0 0.75rem 0 0.25rem;
+  border: 0;
+  background: none;
+  font-weight: 600;
+}
+
+.voltar:hover {
+  text-decoration: underline;
+}
+
+.previa {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border: 1px solid var(--linha);
+  border-radius: 14px;
+  background: var(--papel);
+  cursor: grab;
+  touch-action: none; /* arrastar a foto não pode rolar a página */
+}
+
+.controles {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.375rem;
+  font-weight: 600;
+}
+
+.campo .nota {
+  font-weight: 400;
+}
+
+.campo input[type='range'] {
+  width: 100%;
+  height: 2.75rem;
+  accent-color: var(--tinta);
+}
+
+.texto {
+  height: 3.25rem;
+  padding: 0 1rem;
+  border: 2px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--papel);
+  font-weight: 400;
+}
+
+.texto:hover {
+  border-color: var(--tinta);
+}
+
+.rodape {
+  margin-top: auto;
+  padding-top: 1rem;
+  color: var(--suave);
+  font-size: 0.8125rem;
+}
