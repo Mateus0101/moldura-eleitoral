@@ -27,16 +27,16 @@ export const CORES_PARTIDO: Record<string, readonly string[]> = {
   // faixa verde e amarela. A cor principal (preto ou verde) está em aberto.
   MDB: ['#000000', '#268823', '#fcd300'],
 
+  // Foto de bandeira vendida no Mercado Livre (produto de terceiros, não oficial), medida: faixa preta
+  // no alto, branca no meio (com o logo) e amarela embaixo.
+  MISSÃO: ['#000000', '#fec134'],
+
   // Declaradas no quadro da Wikipédia: vermelho #DA010A, branco, preto. O logo medido tem um roxo
   // escuro (#460e48) no lugar do preto.
   MOBILIZA: ['#da010a', '#000000'],
 
   // Bandeira do partido (Wikipédia/Commons, 2023), medida. Uma cor só.
   NOVO: ['#f3702b'],
-
-  // Bandeira do partido (Wikimedia Commons): fundo azul com as faixas amarela e verde. O PNG do mesmo
-  // arquivo mede #005aac / #fcd400 / #01a64e (tons um pouco diferentes).
-  PL: ['#014f9f', '#fed500', '#019640'],
 
   // Foto de perfil da página oficial no Facebook, medida. O logo do Commons é mais vivo (#ff0100, #fffc00).
   PCB: ['#d20406', '#fdc402'],
@@ -46,6 +46,14 @@ export const CORES_PARTIDO: Record<string, readonly string[]> = {
 
   // Bandeira do partido (Wikipédia/Commons), medida.
   PCO: ['#cb0100', '#fcec15'],
+
+  // Foto de bandeira vendida no Mercado Livre (produto de terceiros), medida: laterais vermelhas e o logo
+  // azul-marinho no centro. Bate com a bandeira do Commons (#fe0002, #302f7e).
+  PDT: ['#fd0100', '#38357d'],
+
+  // Bandeira do partido (Wikimedia Commons): fundo azul com as faixas amarela e verde. O PNG do mesmo
+  // arquivo mede #005aac / #fcd400 / #01a64e (tons um pouco diferentes).
+  PL: ['#014f9f', '#fed500', '#019640'],
 
   // Logo do artigo da Wikipédia, medido. O quadro do artigo declara outras cores (verde #00d663,
   // azul #0097fd, roxo #673796), que não aparecem nesse logo: em aberto.
@@ -79,6 +87,10 @@ export const CORES_PARTIDO: Record<string, readonly string[]> = {
   // Logo do site oficial (og:image), medido; bate com o logo pequeno do site e com o Commons.
   PSTU: ['#d50e15', '#f0e207'],
 
+  // Foto de bandeira vendida no Mercado Livre (produto de terceiros), medida: vermelho liso com a estrela.
+  // O Commons tem outros vermelhos: #cc0000 (bandeira) e #e4142c (logo de 2021).
+  PT: ['#dd0000'],
+
   // Logo do site oficial (página de identidade visual), medido. O CSS do site usa #016124. Uma cor só.
   PV: ['#016227'],
 
@@ -94,4 +106,7 @@ export const CORES_PARTIDO: Record<string, readonly string[]> = {
 
   // Foto de perfil da conta oficial no X, medida; bate com o Commons.
   UNIÃO: ['#044ea0', '#f9c70c', '#1ab1e8'],
+
+  // O símbolo é preto e branco (confirmado pelo usuário): "cores do partido" fica igual ao esquema preto.
+  UP: ['#000000'],
 }
