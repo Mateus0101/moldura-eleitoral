@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "dados": "node scripts/gerar-dados.mjs"
+    "dados": "node scripts/gerar-dados.mjs",
+    "publicar": "node scripts/publicar.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

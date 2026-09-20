@@ -31,3 +31,6 @@ dist-ssr
 
 # Fotos das candidaturas vigentes, geradas por scripts/gerar-dados.mjs (nao versionar)
 /public/fotos/
+
+# Cópia local do repositório do site (scripts/publicar.mjs)
+/.publicar/
