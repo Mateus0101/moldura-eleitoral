@@ -1,4 +1,4 @@
-// Gera os JSON de candidatos (um por UF, mais o BR) e copia as fotos das candidaturas vigentes.
+// Gera os JSON de candidatos (um por UF, mais o BR) e copia as fotos dos titulares vigentes.
 //
 // Entrada:  dados/consulta_cand_2026_<UF>.csv  e  imagens/<UF>/F<UF><SQ>_div.jpg
 // Saída:    public/candidatos/<UF>.json e public/candidatos/manifest.json
@@ -207,14 +207,15 @@ writeFileSync(
 )
 
 // --- Cópia das fotos --------------------------------------------------------
-// Só as vigentes (titulares, vices e suplentes), como public/fotos/<UF>/<SQ>.jpg.
+// Só as dos titulares vigentes, como public/fotos/<UF>/<SQ>.jpg. O app mostra o nome do vice, nunca a
+// foto (nem a de suplente); 835 fotos a menos e uns 2,7 MB. Se um dia o vice ganhar foto, é aqui.
 // Roda de novo sem refazer tudo: pula o que já está lá com o mesmo tamanho e apaga as sobras.
 
 let copiadas = 0
 let puladas = 0
 let removidas = 0
 if (!semFotos) {
-  const comFoto = [...vigentes.values()].filter((c) => c.temFoto)
+  const comFoto = [...vigentes.values()].filter((c) => c.temFoto && TITULARES.includes(c.cargo))
   const esperadas = new Set(comFoto.map((c) => `${c.uf}/${c.sq}.jpg`))
 
   if (existsSync(pastaFotosDestino)) {

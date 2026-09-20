@@ -28,15 +28,15 @@ Web app (PWA) neutro e independente: o eleitor escolhe cargo e candidato, insere
 - 20.981 JPGs, 112 MB, média de 5,5 KB, 161×225 px (algumas 111×155). Todas casam com o CSV pelo `SQ`. Só 4 candidaturas sem foto; a única vigente é Nayr Duarte (SP, dep. estadual, nº 36076): usar avatar genérico.
 - Decisão do usuário: manter as fotos apesar da resolução. Na moldura entram pequenas (selo ou círculo, ampliação até ~1,5×); na busca servem de thumbnail.
 - Ficam no mesmo domínio do app (de outro domínio sem CORS o canvas fica contaminado e não exporta). Fora do precache do PWA e do git.
-- Proposta ainda não confirmada: deploy das fotos a partir do build local (`public/fotos/` é gitignored). Checar o limite de arquivos do host (são 20.779 fotos mais os JSON, ou seja, mais de 20 mil).
+- Proposta ainda não confirmada: deploy das fotos a partir do build local (`public/fotos/` é gitignored). Checar o limite de arquivos do host (são 19.944 fotos de titulares mais os JSON, 19.975 arquivos em `public/`; o Cloudflare Pages grátis aceita 20.000 por deploy, então a folga é mínima e o PWA ainda vai somar arquivos: preferência por um bucket, como o R2, só para as fotos).
 
 ## Script de dados (`npm run dados`)
 
 `scripts/gerar-dados.mjs` (Node, sem dependências) lê `dados/` e `imagens/` e gera, tudo dentro de `public/`:
 - `candidatos/<UF>.json` (27 UFs + `BR`) e `candidatos/manifest.json` (`geradoEm` do TSE, `total`, contagem de titulares por arquivo). Os JSON não são gitignored.
-- `fotos/<UF>/<SQ>.jpg`: só as vigentes (titulares, vices e suplentes), gitignored. Rodar de novo pula o que já está lá e apaga sobras. `npm run dados -- --sem-fotos` gera só os JSON (segundos; a cópia das fotos é a parte lenta).
+- `fotos/<UF>/<SQ>.jpg`: só as dos titulares vigentes (o app mostra o nome do vice, nunca a foto; as 835 fotos de vice e suplente foram descartadas em 20/09/2026), gitignored. Rodar de novo pula o que já está lá e apaga sobras. `npm run dados -- --sem-fotos` gera só os JSON (segundos; a cópia das fotos é a parte lenta).
 - Cada JSON é um array de titulares, ordenado por cargo e número: `{ id (SQ), cargo (CD_CARGO do TSE), numero, nome (urna), partido, nomeCompleto?, semFoto?, vice?, suplentes? }`. `nomeCompleto` só aparece quando difere do nome de urna (serve à busca). Cargos: 1 presidente, 3 governador, 5 senador, 6 dep. federal, 7 dep. estadual, 8 dep. distrital. `vice` (cargos 2 e 4) e `suplentes` (9 e 10, em ordem) vêm aninhados como `{ id, nome, partido, semFoto? }`.
-- Conferido em 20/09/2026: 20.985 linhas, 20.780 vigentes (19.945 titulares, 835 vice/suplentes), nenhum CPF nem título de eleitor nos JSON, 28 arquivos (~2,6 MB brutos), 20.779 fotos (`semFoto` só na Nayr Duarte). Vice e suplentes ficaram todos ligados a um titular.
+- Conferido em 20/09/2026: 20.985 linhas, 20.780 vigentes (19.945 titulares, 835 vice/suplentes), nenhum CPF nem título de eleitor nos JSON, 28 arquivos (~2,6 MB brutos), 19.944 fotos de titulares, 108,6 MB (`semFoto` só na Nayr Duarte). Vice e suplentes ficaram todos ligados a um titular.
 - Regerar perto de 4/10, com o CSV novo do TSE.
 
 ## App (`src/`)
