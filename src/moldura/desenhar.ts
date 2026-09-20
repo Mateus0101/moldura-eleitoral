@@ -2,6 +2,7 @@ import { ALTURA, LARGURA, RODAPE, ROTULO_CARGO, TEMA } from './config.ts'
 import { AJUSTE_INICIAL, enquadrar } from './enquadramento.ts'
 import { estiloMoldura, type EstiloMoldura } from './esquemas.ts'
 import { dimensoes } from './imagens.ts'
+import { desenharRetrato } from './retrato.ts'
 import { ajustarTexto, type OpcoesTexto } from './texto.ts'
 import type { Ajuste, CandidatoMoldura, EntradaMoldura, FonteImagem, Retangulo } from './tipos.ts'
 
@@ -211,8 +212,8 @@ function desenharSelo(ctx: CanvasRenderingContext2D, foto: FonteImagem | null | 
   ctx.arc(SELO_CX, SELO_CY, SELO / 2, 0, Math.PI * 2)
   ctx.clip()
   const area = { x: SELO_CX - SELO / 2, y: SELO_CY - SELO / 2, w: SELO, h: SELO }
-  // Foto de urna é retrato 161x225: alinhada perto do topo para o rosto não ser cortado.
-  if (foto) desenharCobrindo(ctx, foto, area, { zoom: 1, x: 0, y: -0.7 })
+  // Foto de urna é retrato 161x225: enquadrada para a cabeça inteira caber no círculo (ver retrato.ts).
+  if (foto) desenharRetrato(ctx, foto, area)
   else desenharAvatar(ctx, area)
   ctx.restore()
 }
