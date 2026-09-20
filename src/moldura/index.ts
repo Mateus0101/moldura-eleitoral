@@ -1,0 +1,6 @@
+export { ALTURA, LARGURA, ROTULO_CARGO } from './config.ts'
+export { AREA_FOTO, desenharMoldura } from './desenhar.ts'
+export { AJUSTE_INICIAL, arrastar, enquadrar } from './enquadramento.ts'
+export { exportarImagem } from './exportar.ts'
+export { carregarFotoCandidato, carregarFotoEleitor, carregarImagem, dimensoes } from './imagens.ts'
+export type { Ajuste, CandidatoMoldura, EntradaMoldura, FonteImagem, Retangulo } from './tipos.ts'
