@@ -19,9 +19,22 @@ Vite + React + TypeScript + PWA (`vite-plugin-pwa`). A composição da imagem ro
 - `dados/`: CSVs do TSE por estado (fora do git: têm CPF e título de eleitor)
 - `imagens/`: fotos das candidaturas, originais do TSE (fora do git por enquanto)
 - `scripts/gerar-dados.mjs`: gera `public/candidatos/*.json` e `public/fotos/` (`npm run dados`)
+- `scripts/publicar.mjs`: gera o site e publica no GitHub Pages (`npm run publicar`)
 - `public/candidatos/`: um JSON por UF mais `BR`, só com os campos que o app usa
 - `src/moldura/`: motor de canvas que compõe a imagem
 - `src/dados/`, `src/telas/`, `src/componentes/`: busca, telas e componentes do app
+
+## Publicar (GitHub Pages)
+
+O site (o app compilado mais as ~20 mil fotos) vai para um repositório **público** só para isso; o código-fonte continua neste repositório privado.
+
+1. No GitHub, crie um repositório público **vazio** (sem README), por exemplo `moldura-eleitoral-site`. Com outro nome, rode com `SITE_REPO=git@github.com:Mateus0101/<nome>.git`.
+2. Opcional, para contar as imagens geradas: crie uma conta em https://www.goatcounter.com, copie `.env.production.example` para `.env.production` e preencha `VITE_GOATCOUNTER` com o código do seu site. Sem isso, o app não envia nada a ninguém.
+3. `npm run publicar`. A primeira vez leva alguns minutos (são ~20 mil arquivos); as próximas só enviam o que mudou.
+4. No repositório do site: Settings > Pages > Source: "Deploy from a branch" > `main`, pasta `/ (root)`. Em um ou dois minutos o site abre em `https://mateus0101.github.io/moldura-eleitoral-site/`.
+5. Depois: `npm run dados` (só se o TSE atualizou os dados) e `npm run publicar`.
+
+Ensaio sem enviar nada: `npm run publicar -- --teste`.
 
 ## Princípios
 
