@@ -1,7 +1,9 @@
-// Publica o site (o app e as fotos) num repositório público do GitHub, de onde o GitHub Pages serve.
+// Publica o site (o app e as fotos) na branch gh-pages do repositório, de onde o GitHub Pages serve
+// (o repositório precisa ser público no plano grátis).
 //
-// O código-fonte fica no repositório privado; para o site vai só o resultado do build, que já é
-// público para quem abre a página. O script mantém uma cópia local do repositório do site em
+// A gh-pages não tem histórico em comum com o código: guarda só o resultado do build (o app compilado
+// e as ~20 mil fotos, que já são públicos para quem abre a página) e mantém as fotos fora da main.
+// O script mantém uma cópia local do repositório em
 // .publicar/site (fora do git) e só mexe no que mudou: as ~20 mil fotos quase nunca mudam, então
 // não são recopiadas nem reenviadas. A primeira publicação é a demorada (uns minutos: o git empacota
 // ~20 mil arquivos pequenos); as seguintes levam segundos a poucos minutos.
@@ -11,7 +13,8 @@
 //      npm run publicar -- --teste       ensaio: usa um repositório local temporário e não envia nada
 //
 // Configuração, por variáveis de ambiente:
-//   SITE_REPO     repositório do site (padrão: git@github.com:Mateus0101/moldura-eleitoral-site.git)
+//   SITE_REPO     repositório do site (padrão: o origin deste projeto)
+//   SITE_BRANCH   branch do site (padrão: gh-pages; use main se o site tiver um repositório só dele)
 //   SITE_DOMINIO  domínio próprio (ex.: meuapp.com.br): grava o CNAME e usa o caminho-base "/"
 //   SITE_BASE     força o caminho-base (padrão: "/<nome do repositório>/", ou "/" com domínio próprio).
 //                 No Git Bash do Windows, prefixe o comando com MSYS_NO_PATHCONV=1, senão o Git Bash
@@ -53,12 +56,21 @@ const git = (cwd, ...argumentos) => rodar('git', argumentos, { cwd })
 
 // --- Configuração -------------------------------------------------------------
 
-let repo = process.env.SITE_REPO ?? 'git@github.com:Mateus0101/moldura-eleitoral-site.git'
+let repo = process.env.SITE_REPO ?? git(raiz, 'remote', 'get-url', 'origin')
+const ramo = process.env.SITE_BRANCH ?? 'gh-pages'
 let pastaTeste = ''
 if (teste) {
   pastaTeste = mkdtempSync(join(tmpdir(), 'site-teste-'))
   repo = join(pastaTeste, 'remoto.git')
   git(raiz, 'init', '-q', '--bare', '-b', 'main', repo)
+  // Como o repositório de verdade: já tem uma main com o código, e a gh-pages nasce separada.
+  const semente = join(pastaTeste, 'semente')
+  git(raiz, 'clone', '-q', repo, semente)
+  git(semente, 'checkout', '-q', '-B', 'main')
+  writeFileSync(join(semente, 'README.md'), 'código\n')
+  git(semente, 'add', '-A')
+  git(semente, '-c', 'user.name=ensaio', '-c', 'user.email=ensaio@example.com', 'commit', '-q', '-m', 'código')
+  git(semente, 'push', '-q', 'origin', 'main')
 }
 const dominio = process.env.SITE_DOMINIO
 const nomeRepo = basename(repo).replace(/\.git$/, '')
@@ -86,7 +98,7 @@ if (!existsSync(join(copia, '.git'))) {
     rodar('git', ['clone', '-q', repo, copia])
   } catch (erro) {
     console.error(`\nNão consegui clonar ${repo}.`)
-    console.error('Crie antes o repositório PÚBLICO no GitHub (vazio, sem README) e confira o acesso SSH.')
+    console.error('Confira se o repositório existe e se o acesso SSH está funcionando (git ls-remote no endereço acima).')
     throw erro
   }
 }
@@ -97,12 +109,17 @@ git(copia, 'config', 'user.email', git(raiz, 'config', 'user.email'))
 // O que vai para o site tem de ser byte a byte o do build: sem conversão de fim de linha do Windows.
 git(copia, 'config', 'core.autocrlf', 'false')
 
-const jaTemMain = git(copia, 'ls-remote', '--heads', 'origin', 'main') !== ''
-if (jaTemMain) {
-  git(copia, 'fetch', '-q', 'origin', 'main')
-  git(copia, 'checkout', '-q', '-B', 'main', 'origin/main')
+const tentar = (...argumentos) => spawnSync('git', argumentos, { cwd: copia, stdio: 'ignore' }).status === 0
+
+const jaTemRamo = git(copia, 'ls-remote', '--heads', 'origin', ramo) !== ''
+if (jaTemRamo) {
+  git(copia, 'fetch', '-q', 'origin', ramo)
+  git(copia, 'checkout', '-q', '-B', ramo, `origin/${ramo}`)
+} else if (tentar('checkout', '-q', '--orphan', ramo)) {
+  // Branch nova, sem nada em comum com o código: começa vazia (o índice ainda tem os arquivos da main).
+  tentar('rm', '-r', '-q', '--cached', '.')
 } else {
-  git(copia, 'checkout', '-q', '-B', 'main')
+  git(copia, 'checkout', '-q', '-B', ramo) // repositório ainda vazio: não há de onde separar
 }
 
 // --- Troca o conteúdo pelo build novo -----------------------------------------
@@ -142,11 +159,11 @@ if (git(copia, 'status', '--porcelain') === '') {
   const origem = git(raiz, 'rev-parse', '--short', 'HEAD')
   git(copia, 'commit', '-q', '-m', `Publica o site (código ${origem}, ${new Date().toISOString().slice(0, 10)})`)
   console.log(git(copia, 'show', '--stat', '--format=Commit %h: %s', 'HEAD').split('\n').at(-1))
-  git(copia, 'push', '-q', '-u', 'origin', 'main') // sem --force: o histórico do site só cresce
-  console.log(teste ? `Ensaio ok (repositório de teste em ${pastaTeste}).` : `Publicado em ${repo}.`)
-  if (!jaTemMain && !teste) {
+  git(copia, 'push', '-q', '-u', 'origin', ramo) // sem --force: o histórico do site só cresce
+  console.log(teste ? `Ensaio ok (repositório de teste em ${pastaTeste}).` : `Publicado na branch ${ramo} de ${repo}.`)
+  if (!jaTemRamo && !teste) {
     console.log('\nPrimeira publicação. Falta ativar o GitHub Pages:')
-    console.log('  repositório do site > Settings > Pages > Source: "Deploy from a branch" > main, pasta / (root)')
+    console.log(`  repositório > Settings > Pages > Source: "Deploy from a branch" > ${ramo}, pasta / (root)`)
     console.log(`  O site fica em https://<usuário>.github.io${base}`)
   }
 }

@@ -26,13 +26,12 @@ Vite + React + TypeScript + PWA (`vite-plugin-pwa`). A composição da imagem ro
 
 ## Publicar (GitHub Pages)
 
-O site (o app compilado mais as ~20 mil fotos) vai para um repositório **público** só para isso; o código-fonte continua neste repositório privado.
+O site (o app compilado mais as ~20 mil fotos) vai para a branch `gh-pages` deste mesmo repositório, que precisa ser público (o GitHub Pages grátis só publica repositório público). A `gh-pages` não tem nada em comum com o código e mantém as fotos fora da `main`. Quem clonar o repositório baixa também essa branch (~110 MB); `git clone --single-branch` evita.
 
-1. No GitHub, crie um repositório público **vazio** (sem README), por exemplo `moldura-eleitoral-site`. Com outro nome, rode com `SITE_REPO=git@github.com:Mateus0101/<nome>.git`.
-2. Opcional, para contar as imagens geradas: crie uma conta em https://www.goatcounter.com, copie `.env.production.example` para `.env.production` e preencha `VITE_GOATCOUNTER` com o código do seu site. Sem isso, o app não envia nada a ninguém.
-3. `npm run publicar`. A primeira vez leva alguns minutos (são ~20 mil arquivos); as próximas só enviam o que mudou.
-4. No repositório do site: Settings > Pages > Source: "Deploy from a branch" > `main`, pasta `/ (root)`. Em um ou dois minutos o site abre em `https://mateus0101.github.io/moldura-eleitoral-site/`.
-5. Depois: `npm run dados` (só se o TSE atualizou os dados) e `npm run publicar`.
+1. Opcional, para contar as imagens geradas: crie uma conta em https://www.goatcounter.com, copie `.env.production.example` para `.env.production` e preencha `VITE_GOATCOUNTER` com o código do seu site. Sem isso, o app não envia nada a ninguém.
+2. `npm run publicar`. A primeira vez leva alguns minutos (são ~20 mil arquivos); as próximas só enviam o que mudou.
+3. No GitHub: Settings > Pages > Source: "Deploy from a branch" > `gh-pages`, pasta `/ (root)`. Em um ou dois minutos o site abre em `https://mateus0101.github.io/moldura-eleitoral/`.
+4. Depois: `npm run dados` (só se o TSE atualizou os dados) e `npm run publicar`.
 
 Ensaio sem enviar nada: `npm run publicar -- --teste`.
 
