@@ -3,5 +3,12 @@ export { AREA_FOTO, desenharMoldura } from './desenhar.ts'
 export { AJUSTE_INICIAL, arrastar, enquadrar } from './enquadramento.ts'
 export { estiloMoldura, gradienteCss, type Esquema } from './esquemas.ts'
 export { exportarImagem } from './exportar.ts'
-export { carregarFotoCandidato, carregarFotoEleitor, carregarImagem, dimensoes } from './imagens.ts'
+export {
+  ErroFoto,
+  carregarFotoCandidato,
+  carregarFotoEleitor,
+  carregarImagem,
+  dimensoes,
+  type MotivoErroFoto,
+} from './imagens.ts'
 export type { Ajuste, CandidatoMoldura, EntradaMoldura, FonteImagem, Retangulo } from './tipos.ts'

@@ -15,9 +15,11 @@ import {
   estiloMoldura,
   exportarImagem,
   gradienteCss,
+  ErroFoto,
   type Ajuste,
   type Esquema,
   type FonteImagem,
+  type MotivoErroFoto,
 } from '../moldura/index.ts'
 
 const PASSO_TECLADO = 40 // px do canvas por toque numa seta
@@ -34,6 +36,13 @@ function suportaCompartilharArquivo(): boolean {
   } catch {
     return false
   }
+}
+
+const MENSAGEM_FOTO: Record<MotivoErroFoto, string> = {
+  leitura: 'Não consegui ler esse arquivo. Escolha a foto de novo, de dentro da galeria.',
+  formato: 'Esse formato de foto (HEIC) não abre neste aparelho. Escolha uma foto em JPG ou PNG, ou tire um print dela.',
+  decodificacao: 'Essa foto não abriu neste aparelho. Tente outra, em JPG ou PNG.',
+  memoria: 'A foto é grande demais para este aparelho. Tente uma menor, em JPG ou PNG.',
 }
 
 const ROTULO_ESQUEMA: Record<Esquema, string> = {
@@ -120,15 +129,21 @@ export function Editor({ candidato, onTrocar }: Props) {
   }, [candidato, nomeEleitor, cores, fotoCandidato, fotoEleitor, ajuste])
 
   async function escolherFoto(e: ChangeEvent<HTMLInputElement>) {
-    const arquivo = e.target.files?.[0]
-    e.target.value = '' // permite escolher o mesmo arquivo de novo
+    const entrada = e.target
+    const arquivo = entrada.files?.[0]
     if (!arquivo) return
     try {
       setFotoEleitor(await carregarFotoEleitor(arquivo))
       setAjuste(AJUSTE_INICIAL)
       setErro('')
-    } catch {
-      setErro('Não foi possível abrir essa foto. Tente outra, em JPG ou PNG.')
+    } catch (falha) {
+      const motivo = falha instanceof ErroFoto ? falha.motivo : 'decodificacao'
+      const detalhe = falha instanceof ErroFoto && falha.detalhe ? ` (Detalhe: ${falha.detalhe}.)` : ''
+      setErro(MENSAGEM_FOTO[motivo] + detalhe)
+    } finally {
+      // Só limpa o campo depois de ler a foto (permite escolher o mesmo arquivo de novo). No Android,
+      // limpar antes pode soltar o arquivo antes de ele ser lido.
+      entrada.value = ''
     }
   }
 
