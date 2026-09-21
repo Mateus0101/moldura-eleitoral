@@ -499,6 +499,11 @@ main {
   color: var(--sobre-tinta);
 }
 
+.rodape a {
+  color: inherit;
+  text-underline-offset: 0.15em;
+}
+
 .rodape {
   margin-top: auto;
   padding-top: 1rem;

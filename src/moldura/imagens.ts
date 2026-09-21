@@ -1,4 +1,5 @@
 import { LADO_MAX_FOTO } from './config.ts'
+import { carregarConversorHeic } from './heic.ts'
 import type { FonteImagem } from './tipos.ts'
 
 export function dimensoes(img: FonteImagem): { largura: number; altura: number } {
@@ -16,7 +17,8 @@ export function carregarImagem(url: string): Promise<HTMLImageElement> {
   })
 }
 
-export type MotivoErroFoto = 'leitura' | 'formato' | 'decodificacao' | 'memoria'
+// conversor: o HEIC precisou de conversão e a biblioteca não pôde ser baixada (sem conexão, por exemplo).
+export type MotivoErroFoto = 'leitura' | 'formato' | 'decodificacao' | 'memoria' | 'conversor'
 
 // Falha ao abrir a foto do eleitor: o motivo escolhe a mensagem certa, e o detalhe (formato e tamanho)
 // é curto e fica visível para a pessoa mostrar se o problema continuar.
@@ -99,10 +101,31 @@ async function viaBitmap(blob: Blob): Promise<HTMLCanvasElement> {
   }
 }
 
+// HEIC que o navegador não abriu: converte pela biblioteca (baixada agora) direto para uma imagem em memória.
+async function viaConversorHeic(blob: Blob): Promise<HTMLCanvasElement> {
+  let conversor: Awaited<ReturnType<typeof carregarConversorHeic>>
+  try {
+    conversor = await carregarConversorHeic()
+  } catch {
+    throw new ErroFoto('conversor', 'não baixou o conversor de HEIC')
+  }
+  const bitmap = await conversor.heicTo({ blob, type: 'bitmap' })
+  try {
+    return reduzir(bitmap, bitmap.width, bitmap.height)
+  } finally {
+    bitmap.close()
+  }
+}
+
+type OpcoesFoto = {
+  // Chamado quando a foto (HEIC) vai precisar de conversão, que pode levar alguns segundos: a tela avisa.
+  aoConverter?: () => void
+}
+
 // Foto escolhida pelo eleitor. Lê o arquivo inteiro para a memória antes de qualquer outra coisa: no
 // Android o arquivo pode ser uma referência (content://, Google Fotos) que só é lida quando alguém pede,
 // e ela pode se soltar se o campo de arquivo for limpo enquanto isso.
-export async function carregarFotoEleitor(arquivo: Blob): Promise<HTMLCanvasElement> {
+export async function carregarFotoEleitor(arquivo: Blob, opcoes: OpcoesFoto = {}): Promise<HTMLCanvasElement> {
   let bytes: ArrayBuffer
   try {
     bytes = await arquivo.arrayBuffer()
@@ -119,6 +142,15 @@ export async function carregarFotoEleitor(arquivo: Blob): Promise<HTMLCanvasElem
   for (const decodificar of [viaImagem, viaBitmap]) {
     try {
       return await decodificar(blob)
+    } catch (e) {
+      if (e instanceof ErroFoto) throw e
+      causa = e
+    }
+  }
+  if (formato === 'heic') {
+    opcoes.aoConverter?.()
+    try {
+      return await viaConversorHeic(blob)
     } catch (e) {
       if (e instanceof ErroFoto) throw e
       causa = e

@@ -30,6 +30,10 @@ Cópias e versões não oficiais. O aplicativo oficial é o publicado pelo autor
 Qualquer outra cópia ou versão modificada é não oficial e não tem relação com o
 autor, nem com o projeto original.
 
+Componentes de terceiros. O aplicativo usa bibliotecas de terceiros, que continuam sob as licenças
+próprias delas e não são cobertas por esta licença. Os avisos estão em
+public/licencas-de-terceiros.txt (por exemplo, o conversor de fotos HEIC, sob a LGPL-3.0).
+
 Dados e imagens de terceiros. Os dados e as fotos dos candidatos vêm do Tribunal
 Superior Eleitoral (TSE) e não são obra deste projeto. Esta licença não trata
 deles, e o projeto é independente do TSE, de candidatos, de partidos e de

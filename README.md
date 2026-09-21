@@ -45,6 +45,8 @@ O app é um PWA: depois de publicado dá para instalá-lo na tela inicial (Andro
 
 O aplicativo oficial é o publicado pelo autor; qualquer outra cópia é não oficial. Os dados e as fotos dos candidatos são do TSE e não são cobertos por esta licença.
 
+Bibliotecas de terceiros continuam sob as licenças delas. Em especial, o conversor de fotos HEIC (`heic-to`, com libheif e libde265) é LGPL-3.0; os avisos estão em [`public/licencas-de-terceiros.txt`](public/licencas-de-terceiros.txt) e também no rodapé do app. Fotos HEIC (formato do iPhone) são convertidas no próprio aparelho, e o conversor só é baixado quando alguém escolhe uma foto nesse formato.
+
 ## Princípios
 
 - Neutralidade: todos os candidatos, de qualquer partido, com o mesmo tratamento.
@@ -55,5 +57,5 @@ O aplicativo oficial é o publicado pelo autor; qualquer outra cópia é não of
 
 - **Sem cobrança**: o app é gratuito (cobrar pelo download fere normas do TSE) e não guarda dados dos eleitores. A única métrica prevista é a contagem de imagens geradas, sem identificar ninguém. Falta validar com advogado eleitoral o uso da imagem dos candidatos.
 - Nome definitivo do projeto.
-- Revisar o texto do `LICENSE` com advogado.
+- Revisar o texto do `LICENSE` com advogado, junto com o uso do conversor HEIC (LGPL-3.0).
 - Identidade visual da moldura.

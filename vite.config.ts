@@ -31,8 +31,21 @@ export default defineConfig({
         // Só o app (HTML, JS, CSS) vai para o pré-cache. As ~20 mil fotos e os JSON dos candidatos ficam
         // de fora e entram no cache conforme a pessoa usa.
         globPatterns: ['**/*.{js,css,html,webmanifest}'],
-        globIgnores: ['fotos/**', 'candidatos/**'],
+        // O conversor de HEIC (heic-to, ~3 MB) também fica de fora: quase ninguém usa, e quem usa o
+        // baixa uma vez (regra de cache abaixo).
+        globIgnores: ['fotos/**', 'candidatos/**', 'assets/heic-to-*.js'],
+        // Abrir o arquivo de licenças em outra aba é uma navegação: sem isto o service worker entregaria o app no lugar.
+        navigateFallbackDenylist: [/\.txt$/],
         runtimeCaching: [
+          {
+            urlPattern: ({ url }) => /\/assets\/heic-to-[^/]+\.js$/.test(url.pathname),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'conversor-heic',
+              expiration: { maxEntries: 2 }, // a versão nova troca a antiga
+              cacheableResponse: { statuses: [200] },
+            },
+          },
           {
             // Dados dos candidatos: rede primeiro (o TSE atualiza), cache se estiver sem sinal.
             urlPattern: ({ url }) => url.pathname.includes('/candidatos/'),

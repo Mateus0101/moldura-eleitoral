@@ -40,7 +40,8 @@ function suportaCompartilharArquivo(): boolean {
 
 const MENSAGEM_FOTO: Record<MotivoErroFoto, string> = {
   leitura: 'Não consegui ler esse arquivo. Escolha a foto de novo, de dentro da galeria.',
-  formato: 'Esse formato de foto (HEIC) não abre neste aparelho. Escolha uma foto em JPG ou PNG, ou tire um print dela.',
+  formato: 'Não consegui abrir essa foto no formato HEIC. Escolha outra, em JPG ou PNG, ou tire um print dela.',
+  conversor: 'Não consegui carregar o conversor de fotos HEIC. Verifique a conexão e tente de novo, ou escolha uma foto em JPG ou PNG.',
   decodificacao: 'Essa foto não abriu neste aparelho. Tente outra, em JPG ou PNG.',
   memoria: 'A foto é grande demais para este aparelho. Tente uma menor, em JPG ou PNG.',
 }
@@ -63,6 +64,7 @@ export function Editor({ candidato, onTrocar }: Props) {
   const [ajuste, setAjuste] = useState<Ajuste>(AJUSTE_INICIAL)
   const [nomeEleitor, setNomeEleitor] = useState('')
   const [erro, setErro] = useState('')
+  const [convertendo, setConvertendo] = useState(false) // foto HEIC sendo convertida
   const [podeCompartilhar] = useState(suportaCompartilharArquivo)
   // O JPEG fica pronto antes do clique: o navegador só deixa abrir o menu de compartilhar dentro do
   // gesto do toque, e gerar a imagem na hora (é assíncrono) faria o iPhone recusar.
@@ -133,7 +135,7 @@ export function Editor({ candidato, onTrocar }: Props) {
     const arquivo = entrada.files?.[0]
     if (!arquivo) return
     try {
-      setFotoEleitor(await carregarFotoEleitor(arquivo))
+      setFotoEleitor(await carregarFotoEleitor(arquivo, { aoConverter: () => setConvertendo(true) }))
       setAjuste(AJUSTE_INICIAL)
       setErro('')
     } catch (falha) {
@@ -144,6 +146,7 @@ export function Editor({ candidato, onTrocar }: Props) {
       // Só limpa o campo depois de ler a foto (permite escolher o mesmo arquivo de novo). No Android,
       // limpar antes pode soltar o arquivo antes de ele ser lido.
       entrada.value = ''
+      setConvertendo(false)
     }
   }
 
@@ -230,10 +233,12 @@ export function Editor({ candidato, onTrocar }: Props) {
             {fotoEleitor ? 'Trocar foto' : 'Escolher foto'}
           </button>
           <input ref={entradaFoto} type="file" accept="image/*" hidden onChange={escolherFoto} />
-          <p className="nota">
-            {fotoEleitor
-              ? 'Arraste a foto para enquadrar.'
-              : 'Escolha uma foto sua. Ela e o seu nome nunca saem do aparelho.'}
+          <p className="nota" aria-live="polite">
+            {convertendo
+              ? 'Convertendo a foto do formato HEIC. Pode levar alguns segundos...'
+              : fotoEleitor
+                ? 'Arraste a foto para enquadrar.'
+                : 'Escolha uma foto sua. Ela e o seu nome nunca saem do aparelho.'}
           </p>
         </div>
 

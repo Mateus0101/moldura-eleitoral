@@ -161,7 +161,11 @@ function App() {
         <p>
           Aplicativo independente, sem vínculo com o TSE, candidatos, partidos ou campanhas.
           {dataDados && ` Dados do TSE gerados em ${dataDados}.`}
-          {contadorAtivo && ' Só contamos quantas imagens são geradas, sem saber quem as gerou.'}
+          {contadorAtivo && ' Só contamos quantas imagens são geradas, sem saber quem as gerou.'}{' '}
+          <a href={`${import.meta.env.BASE_URL}licencas-de-terceiros.txt`} target="_blank" rel="noopener">
+            Licenças de terceiros
+          </a>
+          .
         </p>
       </footer>
     </div>
