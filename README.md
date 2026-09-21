@@ -26,6 +26,8 @@ Vite + React + TypeScript + PWA (`vite-plugin-pwa`). A composição da imagem ro
 
 ## Publicar (GitHub Pages)
 
+Site no ar: https://mateus0101.github.io/moldura-eleitoral/
+
 O site (o app compilado mais as ~20 mil fotos) vai para a branch `gh-pages` deste mesmo repositório, que precisa ser público (o GitHub Pages grátis só publica repositório público). A `gh-pages` não tem nada em comum com o código e mantém as fotos fora da `main`. Quem clonar o repositório baixa também essa branch (~110 MB); `git clone --single-branch` evita.
 
 1. Opcional, para contar as imagens geradas: crie uma conta em https://www.goatcounter.com, copie `.env.production.example` para `.env.production` e preencha `VITE_GOATCOUNTER` com o código do seu site. Sem isso, o app não envia nada a ninguém.
