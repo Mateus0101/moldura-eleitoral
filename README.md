@@ -35,6 +35,12 @@ O site (o app compilado mais as ~20 mil fotos) vai para a branch `gh-pages` dest
 
 Ensaio sem enviar nada: `npm run publicar -- --teste`.
 
+## Licença
+
+**Todos os direitos reservados.** O código é público para que qualquer pessoa possa ler e auditar, mas isso não dá permissão para copiar, modificar, redistribuir nem colocar no ar cópias ou versões derivadas, sem autorização por escrito do autor. O texto completo está em [`LICENSE`](LICENSE). Sugestões e problemas podem ser enviados por issue ou pull request.
+
+O aplicativo oficial é o publicado pelo autor; qualquer outra cópia é não oficial. Os dados e as fotos dos candidatos são do TSE e não são cobertos por esta licença.
+
 ## Princípios
 
 - Neutralidade: todos os candidatos, de qualquer partido, com o mesmo tratamento.
@@ -45,5 +51,5 @@ Ensaio sem enviar nada: `npm run publicar -- --teste`.
 
 - **Sem cobrança**: o app é gratuito (cobrar pelo download fere normas do TSE) e não guarda dados dos eleitores. A única métrica prevista é a contagem de imagens geradas, sem identificar ninguém. Falta validar com advogado eleitoral o uso da imagem dos candidatos.
 - Nome definitivo do projeto.
-- Licença (por ora, todos os direitos reservados).
+- Revisar o texto do `LICENSE` com advogado.
 - Identidade visual da moldura.

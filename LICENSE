@@ -1,0 +1,41 @@
+Copyright (c) 2026 Mateus Menezes. Todos os direitos reservados.
+All rights reserved.
+
+Este repositório é público por transparência: qualquer pessoa pode ler e auditar o
+código. Isso NÃO concede licença de uso. Sem autorização prévia e por escrito do
+autor, é proibido:
+
+  1. copiar, modificar, adaptar ou criar obras derivadas deste código, no todo ou
+     em parte;
+  2. redistribuir ou publicar cópias ou versões modificadas, por qualquer meio;
+  3. colocar no ar, como site, aplicativo ou serviço, este código ou qualquer
+     versão derivada dele;
+  4. usar o nome do projeto, suas marcas ou sua identidade visual de forma que
+     sugira vínculo com o autor.
+
+Sem pedir autorização, é permitido:
+
+  - ler o código, estudá-lo e comentá-lo;
+  - abrir issues e enviar sugestões (pull requests) neste repositório;
+  - o que os Termos de Serviço do GitHub garantem a qualquer usuário sobre
+    repositórios públicos: visualizar e fazer fork dentro do próprio GitHub.
+    Essa permissão é só a dos Termos do GitHub e não autoriza nenhum dos usos
+    proibidos acima.
+
+Contribuições. Ao enviar uma issue ou pull request, você concede ao autor uma
+licença perpétua, irrevogável, mundial e gratuita para usar, modificar e
+incorporar essa contribuição ao projeto, inclusive sem crédito.
+
+Cópias e versões não oficiais. O aplicativo oficial é o publicado pelo autor.
+Qualquer outra cópia ou versão modificada é não oficial e não tem relação com o
+autor, nem com o projeto original.
+
+Dados e imagens de terceiros. Os dados e as fotos dos candidatos vêm do Tribunal
+Superior Eleitoral (TSE) e não são obra deste projeto. Esta licença não trata
+deles, e o projeto é independente do TSE, de candidatos, de partidos e de
+campanhas.
+
+Sem garantia. O software é fornecido "no estado em que se encontra", sem garantia
+de qualquer tipo, e o autor não responde por danos decorrentes do seu uso.
+
+Para pedir autorização, abra uma issue neste repositório.
