@@ -458,6 +458,47 @@ main {
   border-color: var(--tinta);
 }
 
+/* Aviso de versão nova: fixo embaixo, sem cobrir o conteúdo por muito tempo. */
+.aviso-atualizacao {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  max-width: 38rem;
+  margin-inline: auto;
+  padding: 0.75rem 1rem;
+  border-radius: var(--raio);
+  background: var(--tinta);
+  color: var(--sobre-tinta);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.25);
+}
+
+.aviso-acoes {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.botao-aviso {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 2px solid var(--sobre-tinta);
+  border-radius: var(--raio);
+  background: var(--sobre-tinta);
+  color: var(--tinta);
+  font-weight: 700;
+}
+
+.botao-aviso-suave {
+  background: none;
+  color: var(--sobre-tinta);
+}
+
 .rodape {
   margin-top: auto;
   padding-top: 1rem;

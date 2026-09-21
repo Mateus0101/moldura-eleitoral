@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
+import { AvisoAtualizacao } from './componentes/AvisoAtualizacao.tsx'
 import { SetaBaixo } from './componentes/icones.tsx'
 import { carregarCandidatos, carregarDataDosDados } from './dados/carregar.ts'
 import type { Candidato } from './dados/tipos.ts'
@@ -153,6 +154,8 @@ function App() {
 
         {candidato && <Editor key={candidato.id} candidato={candidato} onTrocar={voltarParaLista} />}
       </main>
+
+      <AvisoAtualizacao />
 
       <footer className="rodape">
         <p>
