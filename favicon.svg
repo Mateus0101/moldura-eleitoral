@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Moldura Eleitoral</title>
+  <!-- Ícone provisório: a moldura com uma silhueta e o número em caixinhas, como na tela da urna.
+       Só as cores do app (tinta, visor e papel), nada que lembre partido. -->
+  <defs>
+    <clipPath id="quadro"><rect x="112" y="104" width="288" height="288" rx="44"/></clipPath>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#141c17"/>
+  <rect x="112" y="104" width="288" height="288" rx="44" fill="#e3e8e1"/>
+  <g clip-path="url(#quadro)" fill="#56635b">
+    <circle cx="256" cy="212" r="54"/>
+    <ellipse cx="256" cy="366" rx="108" ry="96"/>
+  </g>
+  <rect x="150" y="338" width="212" height="84" rx="42" fill="#f6f7f4" stroke="#141c17" stroke-width="14"/>
+  <rect x="190" y="360" width="40" height="40" rx="8" fill="none" stroke="#141c17" stroke-width="9"/>
+  <rect x="282" y="360" width="40" height="40" rx="8" fill="none" stroke="#141c17" stroke-width="9"/>
+</svg>
