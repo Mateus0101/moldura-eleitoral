@@ -44,10 +44,15 @@ const teste = args.has('--teste')
 const semBuild = args.has('--sem-build')
 
 function rodar(comando, argumentos, opcoes = {}) {
-  const r = spawnSync(comando, argumentos, { cwd: raiz, encoding: 'utf8', ...opcoes })
+  // maxBuffer alto: com ~20 mil arquivos a saída de alguns comandos do git passa do 1 MB padrão do Node.
+  const r = spawnSync(comando, argumentos, { cwd: raiz, encoding: 'utf8', maxBuffer: 1024 * 1024 * 1024, ...opcoes })
   if (r.status !== 0) {
-    if (r.stdout) console.error(r.stdout)
-    if (r.stderr) console.error(r.stderr)
+    if (r.error) console.error(r.error.message)
+    else {
+      // Só o começo da saída: em erro com milhares de linhas, o resto só atrapalha.
+      if (r.stdout) console.error(r.stdout.split('\n').slice(0, 20).join('\n'))
+      if (r.stderr) console.error(r.stderr.split('\n').slice(0, 20).join('\n'))
+    }
     throw new Error(`Falhou: ${comando} ${argumentos.join(' ')}`)
   }
   return (r.stdout ?? '').trim()
@@ -152,13 +157,25 @@ if (!existsSync(join(copia, '.nojekyll'))) writeFileSync(join(copia, '.nojekyll'
 if (dominio) writeFileSync(join(copia, 'CNAME'), `${dominio}\n`)
 else rmSync(join(copia, 'CNAME'), { force: true })
 
+console.log('Preparando os arquivos para o git (na primeira vez leva alguns minutos, sem mostrar nada)...')
 git(copia, 'add', '-A')
-if (git(copia, 'status', '--porcelain') === '') {
-  console.log('Nada mudou desde a última publicação.')
-} else {
+let commitou = false
+if (git(copia, 'status', '--porcelain') !== '') {
   const origem = git(raiz, 'rev-parse', '--short', 'HEAD')
   git(copia, 'commit', '-q', '-m', `Publica o site (código ${origem}, ${new Date().toISOString().slice(0, 10)})`)
-  console.log(git(copia, 'show', '--stat', '--format=Commit %h: %s', 'HEAD').split('\n').at(-1))
+  commitou = true
+  // shortstat: uma linha de resumo. O --stat listaria um arquivo por linha (~20 mil).
+  console.log(git(copia, 'show', '--shortstat', '--format=', 'HEAD').split('\n').filter(Boolean).at(-1))
+}
+
+// Envia sempre que o site local está à frente do GitHub, e não só quando houve commit agora: assim
+// um commit que ficou preso numa tentativa anterior (que parou antes do envio) também sai.
+const noGithub = git(copia, 'ls-remote', '--heads', 'origin', ramo).split('\t')[0]
+if (noGithub === git(copia, 'rev-parse', 'HEAD')) {
+  console.log('Nada mudou desde a última publicação.')
+} else {
+  if (!commitou) console.log('Há uma publicação anterior que ainda não chegou ao GitHub.')
+  console.log('Enviando ao GitHub (na primeira vez são ~110 MB e leva vários minutos, sem mostrar nada)...')
   git(copia, 'push', '-q', '-u', 'origin', ramo) // sem --force: o histórico do site só cresce
   console.log(teste ? `Ensaio ok (repositório de teste em ${pastaTeste}).` : `Publicado na branch ${ramo} de ${repo}.`)
   if (!jaTemRamo && !teste) {
