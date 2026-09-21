@@ -35,6 +35,8 @@ O site (o app compilado mais as ~20 mil fotos) vai para a branch `gh-pages` dest
 
 Ensaio sem enviar nada: `npm run publicar -- --teste`.
 
+O app é um PWA: depois de publicado dá para instalá-lo na tela inicial (Android: menu do Chrome > Instalar app; iPhone: Compartilhar > Adicionar à Tela de Início). O que já foi aberto (o app, a lista do estado e as fotos vistas) funciona sem sinal. Quando sai uma versão nova, o app avisa e só atualiza se a pessoa aceitar.
+
 ## Licença
 
 **Todos os direitos reservados.** O código é público para que qualquer pessoa possa ler e auditar, mas isso não dá permissão para copiar, modificar, redistribuir nem colocar no ar cópias ou versões derivadas, sem autorização por escrito do autor. O texto completo está em [`LICENSE`](LICENSE). Sugestões e problemas podem ser enviados por issue ou pull request.
